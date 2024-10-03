@@ -1,0 +1,75 @@
+﻿@page "/download"
+@inject AppService app
+@inject ISnackbar snackbar
+@inject IJSRuntime Js
+
+@if (groups != null && modules != null)
+{
+    <div class="mr-8">
+        <MudGrid>
+            @{
+                foreach (var group in groups)
+                {
+                    <MudItem xs="12" sm="6" md="4" lg="3">
+                        <MudPaper Class="mud-theme-primary d-flex align-center justify-center mud-width-full my-4 mx-4">
+                            <MudText Typo="Typo.h6" Class="py-2 px-4">@group</MudText>
+                        </MudPaper>
+                        <div class="d-flex mud-width-full ml-4 py-4 px-4 my-4" Elevation="0">
+                            <MudStack>
+                                @foreach (var module in modules.Where(m => m.Group == group))
+                                {
+                                    <MudSwitch @bind-Value="module.Selected" Label="@module.Title" Disabled="@(!module.Enabled)"
+                                               Color="Color.Success" UncheckedColor="Color.Primary" />
+                                }
+                            </MudStack>
+                        </div>
+                    </MudItem>
+                }
+            }
+        </MudGrid>
+        <div class="ml-4 mt-4">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GetTemplateAsync">Montar Template</MudButton>&nbsp;&nbsp;
+            <MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.CopyAll" Color="Color.Secondary" title="Copiar o template"
+                           @onclick="CopyToclipboard">Copiar</MudIconButton>&nbsp;&nbsp;
+            <MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.FileDownload" Color="Color.Secondary" title="Download do template"
+                           @onclick="DownloadStringAsFile">Download</MudIconButton>
+
+        </div>
+
+        <div class="ml-4 mt-4 code-container">
+            <MudTextField @bind-Text="templateJson" T="string" 
+                Variant="Variant.Outlined" AutoGrow Class="mr-8" Label="Modules" Style="font-family:Consolas;font-size:small"/>
+        </div>
+    </div>
+} 
+
+
+@code {
+    private string? key;
+    private List<ModuleModel>? modules;
+    private List<string>? groups;
+    private string templateJson = "";
+
+    protected override void OnInitialized()
+    {
+        key = app.Key;
+        groups = app.Groups;
+        modules = app.Modules;
+    }
+
+    public async Task GetTemplateAsync()
+    {
+        templateJson = await app.GetEasyTemplate();
+    }
+
+    private async Task DownloadStringAsFile()
+    {
+        await Js.InvokeVoidAsync("blazorDownloadFile", "template.json", templateJson);
+    }
+
+    private async Task CopyToclipboard()
+    {
+        await Js.InvokeVoidAsync("copyTextToClipboard", templateJson);
+        snackbar.Add("Template copiado pra memória.", Severity.Success);
+    }
+}

@@ -1,0 +1,31 @@
+﻿@inject IJSRuntime js
+@inject ISnackbar snackbar
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await RegisterForUpdateAvailableNotification();
+    }
+
+    private async Task RegisterForUpdateAvailableNotification()
+    {
+        await js.InvokeAsync<object>(
+            identifier: "registerForUpdateAvailableNotification",
+            DotNetObjectReference.Create(this),
+            nameof(OnUpdateAvailable));
+    }
+
+    [JSInvokable(nameof(OnUpdateAvailable))]
+    public Task OnUpdateAvailable()
+    {
+        ShowSnackbar();
+        return Task.CompletedTask;
+    }
+
+    private void ShowSnackbar()
+    {
+        snackbar.Add(
+              "O aplicativo foi atualizado! Feche e abra a janela para acessar a nova versão.",
+              severity: Severity.Success);
+    }
+}

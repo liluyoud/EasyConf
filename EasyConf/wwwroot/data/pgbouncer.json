@@ -1,0 +1,26 @@
+{
+  "type": "app",
+  "data": {
+    "projectName": "{{EASY_PROJECT}}",
+    "serviceName": "pgbouncer",
+    "source": {
+      "type": "image",
+      "image": "{{EASY_IMAGE_PGBOUNCER}}"
+    },
+    "env": "{{EASY_ENVS}}",
+    "deploy": {
+      "replicas": 1,
+      "command": null,
+      "zeroDowntime": true
+    },
+    "domains": [
+      {
+        "host": "{{EASY_SUFIX}}{{EASY_PGBOUNCER}}.{{EASY_DOMAIN}}",
+        "https": true,
+        "port": 80,
+        "path": "/",
+        "wildcard": false
+      }
+    ]
+  }
+}

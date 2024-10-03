@@ -1,0 +1,33 @@
+{
+  "type": "app",
+  "data": {
+    "projectName": "{{EASY_PROJECT}}",
+    "serviceName": "redis_insight",
+    "source": {
+      "type": "image",
+      "image": "{{EASY_IMAGE_REDIS_INSIGHT}}"
+    },
+    "env": "{{EASY_ENVS}}",
+    "deploy": {
+      "replicas": 1,
+      "command": null,
+      "zeroDowntime": true
+    },
+    "domains": [
+      {
+        "host": "{{EASY_SUFIX}}{{EASY_REDIS_INSIGHT}}.{{EASY_DOMAIN}}",
+        "https": true,
+        "port": 8001,
+        "path": "/",
+        "wildcard": false
+      }
+    ],
+    "mounts": [
+      {
+        "type": "volume",
+        "name": "redis_insight_data",
+        "mountPath": "/data"
+      }
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "type": "app",
+  "data": {
+    "projectName": "{{EASY_PROJECT}}",
+    "serviceName": "pgadmin",
+    "source": {
+      "type": "image",
+      "image": "{{EASY_IMAGE_PGADMIN}}"
+    },
+    "env": "{{EASY_ENVS}}",
+    "deploy": {
+      "replicas": 1,
+      "command": null,
+      "zeroDowntime": true
+    },
+    "domains": [
+      {
+        "host": "{{EASY_PROJECT}}{{EASY_PGADMIN}}.{{EASY_DOMAIN}}",
+        "https": true,
+        "port": 80,
+        "path": "/",
+        "wildcard": false
+      }
+    ],
+    "mounts": [
+      {
+        "type": "volume",
+        "name": "data",
+        "mountPath": "/var/lib/pgadmin"
+      }
+    ]
+  }
+}

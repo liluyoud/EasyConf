@@ -1,0 +1,92 @@
+[
+  {
+    "type": "app",
+    "data": {
+      "projectName": "{{EASY_SUFIX}}",
+      "serviceName": "n8n",
+      "source": {
+        "type": "image",
+        "image": "{{EASY_IMAGE_N8N}}"
+      },
+      "env": "{{EASY_ENVS}}",
+      "deploy": {
+        "replicas": 1,
+        "command": "n8n start",
+        "zeroDowntime": true
+      },
+      "domains": [
+        {
+          "host": "{{EASY_SUFIX}}{{EASY_N8N}}.{{EASY_DOMAIN}}",
+          "https": true,
+          "port": 5678,
+          "path": "/",
+          "wildcard": false
+        }
+      ],
+      "mounts": [
+        {
+          "type": "volume",
+          "name": "n8n_data",
+          "mountPath": "/data"
+        }
+      ]
+    }
+  },
+  {
+    "type": "app",
+    "data": {
+      "projectName": "{{EASY_SUFIX}}",
+      "serviceName": "n8n_webhook",
+      "source": {
+        "type": "image",
+        "image": "{{EASY_IMAGE_N8N}}"
+      },
+      "env": "{{EASY_ENVS}}",
+      "deploy": {
+        "replicas": 1,
+        "command": "n8n webhook",
+        "zeroDowntime": true
+      },
+      "domains": [
+        {
+          "host": "{{EASY_SUFIX}}{{EASY_N8N_WEBHOOK}}.{{EASY_DOMAIN}}",
+          "https": true,
+          "port": 5678,
+          "path": "/",
+          "wildcard": false
+        }
+      ],
+      "mounts": [
+        {
+          "type": "volume",
+          "name": "n8n_data",
+          "mountPath": "/data"
+        }
+      ]
+    }
+  },
+  {
+    "type": "app",
+    "data": {
+      "projectName": "{{EASY_SUFIX}}",
+      "serviceName": "n8n_worker",
+      "source": {
+        "type": "image",
+        "image": "{{EASY_IMAGE_N8N}}"
+      },
+      "env": "{{EASY_ENVS}}",
+      "deploy": {
+        "replicas": 1,
+        "command": "n8n worker --concurrency=10",
+        "zeroDowntime": true
+      },
+      "mounts": [
+        {
+          "type": "volume",
+          "name": "n8n_data",
+          "mountPath": "/data"
+        }
+      ]
+    }
+  }
+]

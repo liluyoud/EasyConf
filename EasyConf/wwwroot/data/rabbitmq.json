@@ -1,0 +1,33 @@
+{
+  "type": "app",
+    "data": {
+      "projectName": "{{EASY_PROJECT}}",
+      "serviceName": "rabbitmq",
+      "source": {
+        "type": "image",
+        "image": "{{EASY_IMAGE_RABBITMQ}}"
+      },
+    "env": "{{EASY_ENVS}}",
+    "deploy": {
+      "replicas": 1,
+      "command": null,
+      "zeroDowntime": true
+    },
+    "domains": [
+      {
+        "host": "{{EASY_SUFIX}}{{EASY_RABBITMQ}}.{{EASY_DOMAIN}}",
+        "https": true,
+        "port": 15672,
+        "path": "/",
+        "wildcard": false
+      }
+    ],
+    "mounts": [
+      {
+        "type": "volume",
+        "name": "data",
+        "mountPath": "/var/lib/rabbitmq/"
+      }
+    ]
+  }
+}

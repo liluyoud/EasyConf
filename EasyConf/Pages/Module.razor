@@ -1,0 +1,77 @@
+﻿@page "/module"
+@inject AppService app
+
+<MudPaper Class="mud-theme-primary my-4 mx-4">
+    <MudText Typo="Typo.h5" Class="py-2 px-4">@title</MudText>
+</MudPaper>
+
+<MudPaper Class="mt-4 mx-4 pt-4 pb-6 px-4">
+    <MudGrid>
+        <MudItem sm="12" md="6">
+            @if (groups != null)
+            {
+                <MudSelect T="string" @bind-Value="groupName" Label="Grupo de Módulos" Placeholder="Selecione o grupo"
+                           SelectedValuesChanged="OnGroupSelect"
+                           AdornmentIcon="@Icons.Material.Outlined.DashboardCustomize" AdornmentColor="Color.Secondary" Adornment="Adornment.Start">
+                    @foreach (var item in groups)
+                    {
+                        <MudSelectItem Value="@item">@item</MudSelectItem>
+                    }
+                </MudSelect>
+            }
+        </MudItem>
+        <MudItem sm="12" md="6">
+            <MudSelect T="string" @bind-Value="moduleName" Label="Módulos" Placeholder="Selecione o módulo"
+                       SelectedValuesChanged="OnModuleSelect"
+                       AdornmentIcon="@Icons.Material.Outlined.DashboardCustomize" AdornmentColor="Color.Secondary" Adornment="Adornment.Start">
+                @foreach (var item in modulesFiltered)
+                {
+                    <MudSelectItem Value="@item.Name" Disabled="@(!item.Enabled)">@item.Title</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+@if (module != null)
+{
+    <ModuleBuilder Module="@module"></ModuleBuilder>
+}
+
+@code {
+    private string? title = "Módulo";
+    private List<ModuleModel>? modules;
+    private List<string>? groups;
+    private List<ModuleModel> modulesFiltered = new();
+
+    private ModuleModel? module;
+    private string? groupName;
+    private string? moduleName;
+
+    protected override void OnInitialized()
+    {
+        groups = app.Groups;
+        modules = app.Modules;
+    }
+
+    private void OnGroupSelect()
+    {
+        if (!string.IsNullOrEmpty(groupName) && modules != null)
+        {
+            modulesFiltered = modules.Where(m => m.Group == groupName).ToList();
+            module = null;
+            moduleName = null;
+            StateHasChanged();
+        }
+    }
+
+    private void OnModuleSelect()
+    {
+        if (modules != null && !string.IsNullOrEmpty(groupName) && !string.IsNullOrEmpty(moduleName))
+        {
+            module = modules.Find(m => m.Group == groupName && m.Name == moduleName);
+            title = module?.Title;
+            StateHasChanged();
+        }
+    }
+}

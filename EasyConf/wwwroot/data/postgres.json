@@ -1,0 +1,9 @@
+{
+  "type": "postgres",
+  "data": {
+    "projectName": "{{EASY_PROJECT}}",
+    "serviceName": "postgres",
+    "image": "{{EASY_IMAGE_POSTGRES}}",
+    "password": "{{EASY_PASSWORD}}"
+  }
+}

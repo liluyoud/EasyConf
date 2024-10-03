@@ -1,0 +1,26 @@
+﻿@inject AppService app
+
+@if (!string.IsNullOrEmpty(envModule) && !string.IsNullOrEmpty(jsonModule))
+{
+    <div class="my-4 mx-4">
+        <ModuleItem Module="@envModule"></ModuleItem>
+    </div>
+
+    <div class="my-8 mx-4">
+        <ModuleItem Module="@jsonModule"></ModuleItem>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public required ModuleModel Module { get; set; }
+
+    private string? envModule;
+    private string? jsonModule;
+
+    protected override void OnParametersSet()
+    {
+        envModule = Module.Name + ".env";
+        jsonModule = Module.Name + ".json";
+    }
+}

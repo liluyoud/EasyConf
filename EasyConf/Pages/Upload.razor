@@ -1,0 +1,183 @@
+﻿@page "/upload"
+@inject AppService app
+@inject ISnackbar snackbar
+
+<MudPaper Class="mud-theme-primary my-4 mx-4">
+    <MudText Typo="Typo.h5" Class="py-2 px-4">Upload Module Files</MudText>
+</MudPaper>
+
+@if (groups != null) {
+    <MudPaper Class="mt-4 mx-4 pb-8" Elevation="3">
+        <MudText Color="Color.Primary" Class="pa-4">Informações do módulo: </MudText>
+        <MudForm @ref="formUpload" @bind-IsValid="@success" @bind-Errors="@errors">
+            <div class=" pt-2 px-4">
+                <MudSelect @bind-Value="group" Label="Grupo do Módulo" Placeholder="Informe o grupo do módulo" 
+                           AdornmentIcon="@Icons.Material.Outlined.DashboardCustomize" AdornmentColor="Color.Secondary" Adornment="Adornment.Start"
+                           Required="true" RequiredError="O grupo é obrigatório">
+                    @foreach (var item in groups)
+                    {
+                        <MudSelectItem Value="@item">@item</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudTextField T="string" @bind-Text="title" Label="Título do módulo" Typo="Typo.input" Class="mt-8"
+                              AdornmentIcon="@Icons.Material.Outlined.Title" AdornmentColor="Color.Secondary" Adornment="Adornment.Start"
+                              Placeholder="Informe um nome amigável (pode conter espaços, maiúsculas e minúsculas"
+                              Required="true" RequiredError="O título do módulo é obrigatório"></MudTextField>
+
+                <MudPaper Class="mt-8" Elevation="0">
+                    <MudStack>
+                        <div class="d-flex flex-grow-1 gap-4">
+                            <MudPaper Class="flex-grow-1" Elevation="0">
+                                <MudFileUpload T="IReadOnlyList<IBrowserFile>"
+                                               @ref="@_fileUpload"
+                                               OnFilesChanged="OnInputFileChanged"
+                                               AppendMultipleFiles
+                                               Hidden="@false"
+                                               InputClass="absolute mud-width-full mud-height-full overflow-hidden z-10"
+                                               InputStyle="opacity:0"
+                                               Required="true" 
+                                               RequiredError="Obrigatório enviar os arquivos do módulo"
+                                               tabindex="-1"
+                                               @ondrop="@ClearDragClass"
+                                               @ondragenter="@SetDragClass"
+                                               @ondragleave="@ClearDragClass"
+                                               @ondragend="@ClearDragClass">
+                                    <ActivatorContent>
+                                        <MudPaper Height="150px" Outlined="true" Class="@_dragClass">
+                                            <MudText Typo="Typo.body1" Class="mb-4">Arraste e solte os arquivos <strong>.env</strong> e <strong>.json</strong> (ambos os arquivos devem ter o mesmo nome)</MudText>
+                                            @foreach (var file in _files)
+                                            {
+                                                if (file.Name.Contains(".env"))
+                                                {
+                                                    <MudChip T="string" Color="Color.Info" Text="@file.Name" tabindex="-1" />
+                                                }
+                                                else if (file.Name.Contains(".json"))
+                                                {
+                                                    <MudChip T="string" Color="Color.Warning" Text="@file.Name" tabindex="-1" />
+                                                }
+                                            }
+                                        </MudPaper>
+                                    </ActivatorContent>
+                                </MudFileUpload>
+                            </MudPaper>
+                            <MudPaper Class="mt-4" Width="40" Elevation="0">
+                                <MudStack>
+                                    <MudTooltip Text="Selecionar Arquivo">
+                                        <MudIconButton Icon="@Icons.Material.Filled.FolderOpen" OnClick="@OpenFilePickerAsync"
+                                                       Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium" />
+                                    </MudTooltip>
+                                    <MudTooltip Text="Excluir Arquivos">
+                                        <MudIconButton Icon="@Icons.Material.Filled.DeleteOutline" Disabled="@(!_files.Any())" OnClick="@ClearAsync"
+                                                       Variant="Variant.Filled" Color="Color.Error" Size="Size.Medium" />
+                                    </MudTooltip>
+                                </MudStack>
+                            </MudPaper>
+                        </div>
+                        <MudToolBar Gutters="@false" Class="relative d-flex justify-start gap-4">
+                            <MudTooltip Text="Enviar Arquivos">
+                                <MudButton OnClick="@SaveModuleAsync" Disabled="@(!success)" Variant="Variant.Filled" Color="Color.Primary">
+                                    <MudIcon Icon="@Icons.Material.Filled.DriveFolderUpload" Title="Enviar Arquivo" /> &nbsp;
+                                    <MudText Typo="Typo.body2">Salvar Módulo</MudText>
+                                </MudButton>
+                            </MudTooltip>
+                        </MudToolBar>
+                    </MudStack>
+                </MudPaper>
+            </div>
+        </MudForm>
+    </MudPaper>
+}
+
+@code {
+    private bool success;
+    private string[] errors = { };
+    private MudForm? formUpload;
+
+    private string? title;
+    private string? group;
+    private List<string>? groups;
+
+    private const string DefaultDragClass = "relative rounded-lg border-2 border-dashed pa-4 mt-4 mud-width-full mud-height-full";
+    private string _dragClass = DefaultDragClass;
+    private MudFileUpload<IReadOnlyList<IBrowserFile>>? _fileUpload;
+    private readonly List<IBrowserFile> _files = new();
+
+    protected override void OnInitialized()
+    {
+        groups = app.Groups;
+    }
+
+    private async Task SaveModuleAsync()
+    {
+        var validateFiles = AppHelper.ValidateFileList(_files);
+        if (validateFiles == TypeErrorFileList.Ok)
+        {
+            foreach (var file in _files)
+            {
+                // Ler o conteúdo do arquivo em texto
+                using var stream = file.OpenReadStream();
+                using var reader = new StreamReader(stream);
+                var fileContent = await reader.ReadToEndAsync();
+                // Salvar o arquivo no storage
+                await app.SaveModuleAsync(file.Name, fileContent);
+            }
+            // Salvar o módulo no storage
+            app.Modules?.Add(new ModuleModel()
+                {
+                    Group = group,
+                    Title = title,
+                    Name = Path.GetFileNameWithoutExtension(_files[0].Name),
+                    Personal = true,
+                    Enabled = true
+                });
+            await app.SaveModules();
+            snackbar.Add("Módulo adicionado com sucesso.", Severity.Success);
+        }
+        else
+        {
+            switch (validateFiles)
+            {
+                case TypeErrorFileList.FileCountError:
+                    snackbar.Add("No máximo 2 arquivos (.json, .env)", Severity.Error);
+                    break;
+                case TypeErrorFileList.OneJsonFileError:
+                    snackbar.Add("O arquivo de template .json é obrigatório", Severity.Error);
+                    break;
+                case TypeErrorFileList.OneJsonOneEnvFileError:
+                    snackbar.Add("Um arquivo deve ser .json e outro .env", Severity.Error);
+                    break;
+                case TypeErrorFileList.FileNameError:
+                    snackbar.Add("Os arquivos devem ter o mesmo nome (.json, .env)", Severity.Error);
+                    break;
+                default:
+                    snackbar.Add("Não atende as regras de criação de módulo", Severity.Error);
+                    break;
+            }
+            await ClearAsync();
+        }
+    }
+
+    private async Task ClearAsync()
+    {
+        await (_fileUpload?.ClearAsync() ?? Task.CompletedTask);
+        _files.Clear();
+        ClearDragClass();
+    }
+
+    private Task OpenFilePickerAsync()  => _fileUpload?.OpenFilePickerAsync() ?? Task.CompletedTask;
+
+    private void OnInputFileChanged(InputFileChangeEventArgs e)
+    {
+        ClearDragClass();
+        var files = e.GetMultipleFiles();
+        foreach (var file in files)
+        {
+            _files.Add(file);
+        }
+    }
+
+
+    private void SetDragClass() => _dragClass = $"{DefaultDragClass} mud-border-primary";
+
+    private void ClearDragClass() => _dragClass = DefaultDragClass;
+}

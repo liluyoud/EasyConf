@@ -1,0 +1,43 @@
+﻿@inject AppService app
+@inject ISnackbar snackbar
+
+@if (!string.IsNullOrEmpty(strModule))
+{
+    <MudTextField T="string" Variant="Variant.Outlined" AutoGrow Label="Environment" 
+        Style="font-family:Consolas;font-size:small" @bind-Text="strModule" />
+    <div class="mt-4">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="Salvar">Salvar</MudButton>&nbsp;&nbsp;
+        <MudButton Variant="Variant.Filled" Color="Color.Secondary" @onclick="Resetar">Resetar</MudButton>
+    </div>
+} 
+
+
+@code {
+    [Parameter, EditorRequired]
+    public required string Module { get; set; }
+
+    string? strModule;
+
+    protected async override Task OnParametersSetAsync()
+    {
+        if (await app.ExistsModule(Module))
+            strModule = await app.GetModuleAsync(Module);
+        else
+            strModule = null;    
+    }
+
+    private async void Salvar()
+    {
+        if (strModule != null) {
+            await app.SaveModuleAsync(Module, strModule);
+            snackbar.Add("Módulo salvo com sucesso.", Severity.Success);
+        }
+    } 
+
+    private async void Resetar()
+    {
+        strModule = await app.ResetModuleAsync(Module);
+        snackbar.Add("Módulo restaurado com sucesso.", Severity.Success);
+        StateHasChanged();
+    }
+}

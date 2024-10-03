@@ -1,0 +1,25 @@
+﻿@inject AppService app
+
+@if (version != null)
+{
+    <MudNavMenu Class="my-2">
+        <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home" IconColor="Color.Inherit">Início</MudNavLink>
+        <MudNavLink Href="module" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.DashboardCustomize" IconColor="Color.Inherit">Módulos</MudNavLink>
+        <MudNavLink Href="download" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Download" IconColor="Color.Inherit">Download</MudNavLink>
+        <MudNavLink Href="upload" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.UploadFile" IconColor="Color.Inherit">Upload</MudNavLink>
+    </MudNavMenu>
+    <div style="position:fixed;bottom:0">
+        <MudPaper Class="d-flex align-center justify-center px-2 py-2 mud-theme-primary">
+            <MudText Typo="Typo.caption">@version</MudText>
+        </MudPaper>
+    </div>
+}
+    
+@code {
+    private string? version;
+
+    protected override void OnInitialized()
+    {
+        version = "v" + app.Version;
+    }
+}

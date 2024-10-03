@@ -1,0 +1,104 @@
+[
+  {
+    "type": "app",
+    "data": {
+      "projectName": "{{EASY_PROJECT}}",
+      "serviceName": "dify",
+      "source": {
+        "type": "image",
+        "image": "{{EASY_IMAGE_DIFY_WEB}}"
+      },
+      "env": "{{EASY_ENVS_1}}",
+      "deploy": {
+        "replicas": 1,
+        "command": null,
+        "zeroDowntime": true
+      },
+      "domains": [
+        {
+          "host": "{{EASY_SUFIX}}{{EASY_DIFY}}.{{EASY_DOMAIN}}",
+          "https": true,
+          "port": 3000,
+          "path": "/",
+          "wildcard": false
+        }
+      ]
+    }
+  },
+  {
+    "type": "app",
+    "data": {
+      "projectName": "{{EASY_PROJECT}}",
+      "serviceName": "dify_api",
+      "source": {
+        "type": "image",
+        "image": "{{EASY_IMAGE_DIFY_API}}"
+      },
+      "env": "{{EASY_ENVS_3}}",
+      "deploy": {
+        "replicas": 1,
+        "command": null,
+        "zeroDowntime": true
+      },
+      "domains": [
+        {
+          "host": "{{EASY_SUFIX}}{{EASY_DIFY_API}}.{{EASY_DOMAIN}}",
+          "https": true,
+          "port": 5001,
+          "path": "/",
+          "middlewares": [],
+          "certificateResolver": "",
+          "wildcard": false
+        }
+      ]
+    }
+  },
+  {
+    "type": "app",
+    "data": {
+      "projectName": "{{EASY_PROJECT}}",
+      "serviceName": "dify_sandbox",
+      "source": {
+        "type": "image",
+        "image": "{{EASY_IMAGE_DIFY_SANDBOX}}"
+      },
+      "env": "{{EASY_ENVS_2}}",
+      "deploy": {
+        "replicas": 1,
+        "command": null,
+        "zeroDowntime": true
+      },
+      "mounts": [
+        {
+          "type": "volume",
+          "name": "dependencies",
+          "mountPath": "/dependencies"
+        }
+      ]
+    }
+  },
+  {
+    "type": "app",
+    "data": {
+      "projectName": "{{EASY_PROJECT}}",
+      "serviceName": "dify_worker",
+      "source": {
+        "type": "image",
+        "image": "{{EASY_IMAGE_DIFY_API}}"
+      },
+      "env": "{{EASY_ENVS_3}}",
+      "deploy": {
+        "replicas": 1,
+        "command": null,
+        "zeroDowntime": true
+      },
+      "mounts": [
+        {
+          "type": "volume",
+          "name": "storage",
+          "mountPath": "/app/api/storage"
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,57 @@
+[
+  {
+    "group": "Módulos Básicos",
+    "title": "Postgres",
+    "name": "postgres"
+  },
+  {
+    "group": "Módulos Básicos",
+    "title": "Redis",
+    "name": "redis"
+  },
+  {
+    "group": "Módulos Básicos",
+    "title": "Minio",
+    "name": "minio"
+  },
+  {
+    "group": "Módulos Básicos",
+    "title": "PGBouncer",
+    "name": "pgbouncer"
+  },
+  {
+    "group": "Módulos Básicos",
+    "title": "RabbitMQ",
+    "name": "rabbitmq"
+  },
+  {
+    "group": "Módulos Chat",
+    "title": "Chawoot Nestor",
+    "name": "chatwoot"
+  },
+  {
+    "group": "Módulos Chat",
+    "title": "Evolution V2",
+    "name": "evolution"
+  },
+  {
+    "group": "Módulos IA",
+    "title": "N8N",
+    "name": "n8n"
+  },
+  {
+    "group": "Módulos IA",
+    "title": "Dify",
+    "name": "dify"
+  },
+  {
+    "group": "Ferramentas",
+    "title": "PGAdmin",
+    "name": "pgadmin"
+  },
+  {
+    "group": "Ferramentas",
+    "title": "Redis Insight",
+    "name": "redisinsight"
+  }
+]

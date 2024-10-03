@@ -1,0 +1,89 @@
+[
+  {
+    "type": "app",
+    "data": {
+      "projectName": "{{EASY_PROJECT}}",
+      "serviceName": "chatwoot",
+      "source": {
+        "type": "image",
+        "image": "{{EASY_IMAGE_CHATWOOT}}"
+      },
+      "env": "{{EASY_ENVS}}",
+      "deploy": {
+        "replicas": 1,
+        "command": "bundle exec rails db:chatwoot_prepare && bundle exec rails s -p 3000 -b 0.0.0.0",
+        "zeroDowntime": true
+      },
+      "domains": [
+        {
+          "host": "{{EASY_SUFIX}}{{EASY_CHATWOOT}}.{{EASY_DOMAIN}}",
+          "https": true,
+          "port": 3000,
+          "path": "/",
+          "wildcard": false
+        }
+      ],
+      "mounts": [
+        {
+          "type": "volume",
+          "name": "data",
+          "mountPath": "/app/storage"
+        },
+        {
+          "type": "volume",
+          "name": "public",
+          "mountPath": "/app"
+        },
+        {
+          "type": "volume",
+          "name": "mailer",
+          "mountPath": "/app/app/views/devise/mailer"
+        },
+        {
+          "type": "volume",
+          "name": "mailers",
+          "mountPath": "/app/app/views/mailers"
+        }
+      ]
+    }
+  },
+  {
+    "type": "app",
+    "data": {
+      "projectName": "{{EASY_PROJECT}}",
+      "serviceName": "chatwoot_sidekiq",
+      "source": {
+        "type": "image",
+        "image": "{{EASY_IMAGE_CHATWOOT}}"
+      },
+      "env": "{{EASY_ENVS}}",
+      "deploy": {
+        "replicas": 1,
+        "command": "bundle exec sidekiq -C config/sidekiq.yml",
+        "zeroDowntime": true
+      },
+      "mounts": [
+        {
+          "type": "volume",
+          "name": "data",
+          "mountPath": "/app/storage"
+        },
+        {
+          "type": "volume",
+          "name": "public",
+          "mountPath": "/app"
+        },
+        {
+          "type": "volume",
+          "name": "mailer",
+          "mountPath": "/app/app/views/devise/mailer"
+        },
+        {
+          "type": "volume",
+          "name": "mailers",
+          "mountPath": "/app/app/views/mailers"
+        }
+      ]
+    }
+  }
+]

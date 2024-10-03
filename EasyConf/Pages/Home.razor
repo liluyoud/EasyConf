@@ -1,0 +1,25 @@
+﻿@page "/"
+@inject AppService app
+
+
+<MudPaper Class="mud-theme-primary my-4 mx-4">
+    <MudText Typo="Typo.h5" Class="py-2 px-4">Easy Configuration</MudText>
+</MudPaper>
+
+@if (app.Key != null && app.Modules != null && app.Groups != null)
+{
+    <div class="my-8 mx-4">
+        <ModuleItem Module="@app.EASY_ENVIRONMENT"></ModuleItem>
+    </div>
+}
+else
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+}
+
+@code {
+    protected async override Task OnInitializedAsync()
+    {
+        await app.InitDb();
+    }
+}

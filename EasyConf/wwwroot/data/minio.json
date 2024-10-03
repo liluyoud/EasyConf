@@ -1,0 +1,40 @@
+{
+  "type": "app",
+  "data": {
+    "projectName": "{{EASY_PROJECT}}",
+    "serviceName": "minio",
+    "source": {
+      "type": "image",
+      "image": "{{EASY_IMAGE_MINIO}}"
+    },
+    "env": "{{EASY_ENVS}}",
+    "deploy": {
+      "replicas": 1,
+      "command": "minio server /data --console-address \":9001\"",
+      "zeroDowntime": true
+    },
+    "domains": [
+      {
+        "host": "{{EASY_SUFIX}}{{EASY_MINIO}}.{{EASY_DOMAIN}}",
+        "https": true,
+        "port": 9001,
+        "path": "/",
+        "wildcard": false
+      },
+      {
+        "host": "{{EASY_SUFIX}}{{EASY_MINIO_S3}}.{{EASY_DOMAIN}}",
+        "https": true,
+        "port": 9000,
+        "path": "/",
+        "wildcard": false
+      }
+    ],
+    "mounts": [
+      {
+        "type": "volume",
+        "name": "data",
+        "mountPath": "/data"
+      }
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "type": "redis",
+  "data": {
+    "projectName": "{{EASY_PROJECT}}",
+    "serviceName": "redis",
+    "image": "{{EASY_IMAGE_REDIS}}",
+    "password": "{{EASY_PASSWORD}}"
+  }
+}

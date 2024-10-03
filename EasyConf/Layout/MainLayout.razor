@@ -1,0 +1,98 @@
+﻿@inherits LayoutComponentBase
+@inject IJSRuntime js
+@inject AppService app
+
+<MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
+<MudPopoverProvider />
+<MudSnackbarProvider />
+
+
+<MudLayout>
+    <MudAppBar Elevation="0">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" OnClick="NavToggle" Color="Color.Inherit"/>
+        <MudText Typo="Typo.h5">
+            <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                <span class="text-warning">EasyConf</span>
+            </MudHidden>
+            <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+                <span class="text-warning">EasyPanel Configuration</span>
+            </MudHidden>
+        </MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" title="EasyConf GitHub" Target="_blank" Href="https://github.com/liluyoud/easyconf" Color="Color.Inherit"  />
+        <MudIconButton Icon="@DarkLightIcon" title="@DarkLightTitle" OnClick="DarkModeToggle" Color="Color.Inherit" />
+    </MudAppBar>
+
+    <MudDrawer @bind-Open="_isNavOpen" Elevation="1">
+        <MudDrawerHeader>
+            @if (@_isDarkMode)
+            {
+                <MudImage Src="assets/logodark.png" Height="35" />
+            }
+            else
+            {
+                <MudImage Src="assets/logolight.png" Height="35" />
+            }
+        </MudDrawerHeader>
+        <NavMenu />
+    </MudDrawer>
+
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+            @Body
+            <UpdateDetector/>
+        </MudContainer>
+    </MudMainContent>     
+
+</MudLayout>
+
+
+
+
+@code {
+    private bool _isNavOpen = true;
+    private bool _isDarkMode = true;
+    private MudTheme? _theme = null;
+
+    public Palette CurrentPalette => _isDarkMode ? LayoutHelper.DarkPalette : LayoutHelper.LightPalette;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _theme = new()
+            {
+                PaletteLight = LayoutHelper.LightPalette,
+                PaletteDark = LayoutHelper.DarkPalette,
+                LayoutProperties = new LayoutProperties()
+            };
+    }
+
+    private void NavToggle()
+    {
+        _isNavOpen = !_isNavOpen;
+    }
+
+    private void DarkModeToggle()
+    {
+        _isDarkMode = !_isDarkMode;
+    }
+
+    public string DarkLightIcon => _isDarkMode switch
+    {
+        true => Icons.Material.Rounded.LightMode,
+        false => Icons.Material.Rounded.DarkMode
+    };
+
+    public string DarkLightTitle => _isDarkMode switch
+    {
+        true => "Modo Claro",
+        false => "Modo Escuro"
+    };
+
+    public Color BackGround => _isDarkMode switch
+    {
+        true => Color.Dark,
+        false => Color.Primary
+    };
+}
