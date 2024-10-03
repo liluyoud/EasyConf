@@ -62,14 +62,14 @@ public partial class AppService
                 {
                     var envModule = await GetModuleAsync(module.Name.ToEnv());
                     var jsonModule = await GetModuleAsync(module.Name.ToJson());
-                    if (envModule != null && jsonModule != null)
+                    if (jsonModule != null)
                     {
                         jsonModule = jsonModule.RemoveArray();
-                        envModule = envModule.Replace("\n", "\\n");
-                        envModule = envModule.Replace("\r", "");
+                        envModule = envModule?.Replace("\n", "\\n");
+                        envModule = envModule?.Replace("\r", "");
                         jsonModule = jsonModule.Replace("{{EASY_ENVS}}", envModule);
                         // verify if env is diferent for each image
-                        if (envModule.Contains("###ENV_PART###"))
+                        if (envModule != null && envModule.Contains("###ENV_PART###"))
                         {
                             var envModules = envModule.Split("###ENV_PART###");
                             for (var i = 1; i < envModules.Length; i++)
