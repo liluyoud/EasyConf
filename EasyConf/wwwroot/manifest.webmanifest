@@ -1,6 +1,6 @@
 {
-  "name": "Qute AI",
-  "short_name": "Qute AI",
+  "name": "Qute AI - EasyConf",
+  "short_name": "EasyConf",
   "id": "./",
   "start_url": "./",
   "display": "standalone",
